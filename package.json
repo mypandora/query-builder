@@ -1,0 +1,38 @@
+{
+  "name": "query-builder",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "dist",
+    "index.d.ts"
+  ],
+  "main": "./dist/query-builder.umd.js",
+  "module": "./dist/query-builder.es.js",
+  "exports": {
+    "types": "./index.d.ts",
+    "import": "./dist/query-builder.es.js",
+    "require": "./dist/query-builder.umd.js"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@atlaskit/pragmatic-drag-and-drop": "^1.4.0",
+    "@atlaskit/pragmatic-drag-and-drop-flourish": "^1.1.2",
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.0.3",
+    "nanoid": "^5.0.9"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue2": "^2.3.3",
+    "element-ui": "^2.15.14",
+    "prettier": "3.4.2",
+    "vite": "^6.0.3",
+    "vue": "2.7.14"
+  },
+  "volta": {
+    "node": "20.17.0"
+  }
+}
