@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="tree">
     <tree-group v-for="d in root" :key="d.id" :data="d" :level="0" :operatorText="operatorText">
       <template #default="{ data }">
         <slot v-bind:data="data" v-bind:onUpdate="(key, value) => updateItemValue(data, key, value)"></slot>
@@ -312,3 +312,10 @@ export default {
   },
 };
 </script>
+
+<style>
+.tree {
+  height: 100%;
+  overflow: auto;
+}
+</style>

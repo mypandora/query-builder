@@ -1,17 +1,17 @@
 <template>
-  <div class="mypandora-dnd">
+  <div>
     <!-- 多数据时 -->
-    <div v-if="data.children?.length" class="dnd-group">
-      <div class="dnd-group--jion" @click="() => tree.toggleOperator(data.id)">
+    <div v-if="data.children?.length" class="tree-group">
+      <div class="content-center cursor-pointer" @click="() => tree.toggleOperator(data.id)">
         {{ operatorText[data.operator] }}
       </div>
-      <div class="dnd-group--expand" @click="() => tree.toggle(data.id)">
+      <div class="content-center cursor-pointer" @click="() => tree.toggle(data.id)">
         <icon-expand v-if="data.isOpen" />
         <icon-collapse v-else />
       </div>
-      <div v-if="data.isOpen" class="dnd-group--box">
+      <div v-if="data.isOpen" class="tree-group--box">
         <div class="box--brackets"></div>
-        <div class="items" ref="groupItems">
+        <div class="tree-subtree">
           <tree-node
             v-for="child in data.children"
             :key="child.id"
@@ -25,7 +25,7 @@
           </tree-node>
         </div>
       </div>
-      <div v-else class="group-box-contract">展开{{ data.children?.length || 0 }}个子条件</div>
+      <div v-else class="tree-group-text">展开{{ data.children?.length || 0 }}个子条件</div>
     </div>
 
     <!--单数据时 -->
@@ -80,3 +80,46 @@ export default {
   },
 };
 </script>
+
+<style>
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.content-center {
+  align-content: center;
+}
+
+.tree-group {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+}
+
+.tree-group--box {
+  display: flex;
+  align-items: center;
+}
+
+.box--brackets {
+  width: 15px;
+  height: 100%;
+  border-top: 1px solid var(--t--normal);
+  border-left: 1px solid var(--t--normal);
+  border-bottom: 1px solid var(--t--normal);
+  border-radius: 5px 0 0 5px;
+}
+
+.tree-group-text {
+  word-wrap: break-word;
+}
+
+.tree-subtree {
+  min-height: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0;
+}
+</style>

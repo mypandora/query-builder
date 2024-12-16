@@ -11,48 +11,6 @@
   color: white;
 }
 
-.mypandora-dnd {
-  height: 100%;
-  overflow: auto;
-}
-
-.dnd-group {
-  position: relative;
-  display: flex;
-  gap: 8px;
-  padding: 8px;
-}
-
-.dnd-group--jion,
-.dnd-group--expand,
-.dnd-group--box {
-  display: flex;
-  align-items: center;
-  color: #333;
-}
-
-.dnd-group--jion,
-.dnd-group--expand {
-  cursor: pointer;
-}
-
-.box--brackets {
-  width: 15px;
-  border-top: 1px solid var(--t--normal);
-  border-left: 1px solid var(--t--normal);
-  border-bottom: 1px solid var(--t--normal);
-  border-radius: 5px 0 0 5px;
-  height: 100%;
-}
-
-.items {
-  min-height: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 8px 0;
-}
-
 .item {
   border: 1px solid var(--t--normal);
   background-color: var(--t--normal2);
@@ -178,7 +136,4 @@
   bottom: calc(-0.65 * (var(--gap, 0px) + 2px));
 }
 
-.tree-node {
-  position: relative;
-  cursor: move;
-}
+

@@ -214,3 +214,10 @@ export default {
   },
 };
 </script>
+
+<style>
+.tree-node {
+  position: relative;
+  cursor: move;
+}
+</style>
