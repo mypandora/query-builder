@@ -9,9 +9,10 @@
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
-    class="lucide lucide-circle-minus"
+    class="lucide lucide-circle-x"
   >
     <circle cx="12" cy="12" r="10" />
-    <path d="M8 12h8" />
+    <path d="m15 9-6 6" />
+    <path d="m9 9 6 6" />
   </svg>
 </template>

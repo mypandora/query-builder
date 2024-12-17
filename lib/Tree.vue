@@ -16,6 +16,7 @@
 <script>
 import { nanoid } from "nanoid";
 import TreeGroup from "./TreeGroup.vue";
+import "./tree.css";
 
 export default {
   name: "Tree",
@@ -74,7 +75,7 @@ export default {
       handler(newValue, oldValue) {
         console.log("newValue :>> ", newValue);
         console.log("oldValue :>> ", oldValue);
-        this.$emit("update:data", newValue);
+        this.$emit("update:data", this.flattenChildren(newValue));
       },
     },
   },
@@ -117,20 +118,50 @@ export default {
       }
     },
 
-    //
-    remove(data, id) {
-      return data
-        .filter((item) => item.id !== id)
-        .map((item) => {
-          if (this.hasChildren(item)) {
-            return {
-              ...item,
-              children: this.remove(item.children, id),
-            };
-          }
-          return item;
-        });
+    /**
+     * 打平树。
+     * 假如节点只有一个子节点，则会直接替换为子节点
+     * @param data
+     */
+    flattenChildren(data) {
+      for (let i = 0; i < data.length; i++) {
+        const item = data[i];
+
+        // 如果节点只有一个子节点，直接替换为父级
+        if (item.children && item.children.length === 1) {
+          this.$set(data, i, item.children[0]);
+        } else if (item.children && item.children.length > 0) {
+          this.flattenChildren(item.children);
+        }
+      }
+
+      return data;
     },
+
+    /**
+     * 递归删除节点
+     * @param data
+     * @param id
+     */
+    remove(data, id) {
+      for (let i = data.length - 1; i >= 0; i--) {
+        const item = data[i];
+        if (item.id === id) {
+          // 直接删除当前节点
+          data.splice(i, 1);
+        } else if (this.hasChildren(item)) {
+          // 递归删除子节点
+          this.remove(item.children, id);
+
+          // 如果子节点处理完后为空，可以选择删除空 children 数组
+          if (item.children.length === 0) {
+            delete item.children;
+          }
+        }
+      }
+      return data; // 直接返回被修改的 data
+    },
+
     insertBefore(data, targetId, newItem) {
       return data.flatMap((item) => {
         if (item.id === targetId) {
@@ -312,10 +343,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.tree {
-  height: 100%;
-  overflow: auto;
-}
-</style>

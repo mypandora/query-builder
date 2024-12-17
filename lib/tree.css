@@ -1,0 +1,176 @@
+:root {
+  --primary-color: #3c8ddb;
+  --primary-bg-color: #e0f0fd;
+}
+
+/* 统一 icon 的大小为20px */
+.lucide {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  color: var(--primary-color);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.content-center {
+  align-content: center;
+}
+
+/* Tree.vue */
+.tree {
+  height: 100%;
+  overflow: auto;
+}
+
+/* TreeGroup.vue */
+.tree-group {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+}
+
+.tree-group--box {
+  display: flex;
+  align-items: center;
+}
+
+.box--brackets {
+  width: 15px;
+  height: 100%;
+  border-top: 1px solid var(--primary-color);
+  border-left: 1px solid var(--primary-color);
+  border-bottom: 1px solid var(--primary-color);
+  border-radius: 5px 0 0 5px;
+}
+
+.tree-group-text {
+  word-wrap: break-word;
+}
+
+.tree-subtree {
+  min-height: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+/* TreeNode.vue */
+.tree-node {
+  position: relative;
+  cursor: move;
+}
+
+.inner-dragging-styles {
+  opacity: 0.4;
+}
+
+.item {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  padding: 10px;
+  background-color: var(--primary-bg-color);
+  border: 1px solid var(--primary-color);
+  box-sizing: border-box;
+  touch-action: none;
+}
+
+.lucide-circle-x {
+  display: none;
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  color: #ff5252;
+}
+
+.item:hover .lucide-circle-x {
+  display: block;
+}
+
+/* DropIndicator.vue */
+.line-styles {
+  --terminal-size: 8px;
+  /* To make things a bit clearer we are making the box that the indicator in as
+	   big as the whole tree item */
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: var(--horizontal-indent);
+  bottom: 0;
+
+  /* We don't want to cause any additional 'dragenter' events */
+  pointer-events: none;
+}
+/* Terminal */
+.line-styles::before {
+  display: block;
+  content: "";
+  position: absolute;
+  z-index: 2;
+
+  box-sizing: border-box;
+  width: var(--terminal-size);
+  height: var(--terminal-size);
+  left: 0;
+  background: transparent;
+  border-color: var(--indicator-color);
+  border-width: 2px;
+  border-radius: 50%;
+  border-style: solid;
+}
+/* Line */
+.line-styles::after {
+  display: block;
+  content: "";
+  position: absolute;
+  z-index: 1;
+  background: var(--indicator-color);
+  /*  putting the line to the right of the terminal */
+  left: calc(var(--terminal-size) / 2);
+  height: 2px;
+  right: 0;
+}
+
+/* terminal */
+.line-above-styles::before {
+  top: 0;
+  /* move to position to be a 'cap' on the line */
+  transform: translate(calc(-0.5 * var(--terminal-size)), calc(-0.5 * var(--terminal-size)));
+}
+/* line */
+.line-above-styles::after {
+  top: -1px;
+}
+
+.line-below-styles::before {
+  bottom: 0;
+  /* move to position to be a 'cap' on the line */
+  transform: translate(calc(-0.5 * var(--terminal-size)), calc(0.5 * var(--terminal-size)));
+}
+/* line */
+.line-below-styles::after {
+  bottom: -1px;
+}
+
+.outline-styles {
+  /* To make things a bit clearer we are making the box that the indicator in as
+	big as the whole tree item */
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: var(--horizontal-indent);
+  bottom: 0;
+
+  /* We don't want to cause any additional 'dragenter' events */
+  pointer-events: none;
+
+  border: 2px solid var(--indicator-color);
+  /* TODO: make this a prop?
+	For now: matching the Confluence tree item border radius */
+  border-radius: 3px;
+}

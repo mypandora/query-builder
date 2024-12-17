@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-node" ref="treeNodeRef">
+  <div class="tree-node" :class="{ 'inner-dragging-styles': isDragging }" ref="treeNodeRef">
     <TreeGroup v-if="node.children?.length" :data="node" :level="level + 1" :operatorText="operatorText">
       <template #default="slotProps">
         <slot v-bind="slotProps"></slot>
@@ -7,9 +7,8 @@
     </TreeGroup>
 
     <div v-else class="item">
-      <div class="item-nohover">
-        <slot :data="node"> 无内容 </slot>
-      </div>
+      <slot :data="node"> 无内容 </slot>
+      <icon-close class="cursor-pointer" @click.native="tree.remove(node.id)" />
     </div>
 
     <drop-indicator v-if="instruction" :instruction="instruction" />
@@ -23,8 +22,11 @@ import {
   monitorForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { attachInstruction, extractInstruction } from "@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item";
+import { pointerOutsideOfPreview } from "@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview";
+import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import DropIndicator from "./DropIndicator.vue";
+import IconClose from "./IconClose.vue";
 
 function getParentLevelOfInstruction(instruction) {
   if (instruction.type === "instruction-blocked") {
@@ -53,6 +55,7 @@ export default {
   name: "TreeNode",
   components: {
     DropIndicator,
+    IconClose,
     TreeGroup: () => import("./TreeGroup.vue"),
   },
   inject: ["tree"],
@@ -75,9 +78,8 @@ export default {
       state: "idle",
       cleanup: null,
       isDragging: false,
-      closestEdge: null,
-      cancelExpand: null,
       instruction: null,
+      cancelExpandRef: null,
     };
   },
   methods: {
@@ -93,6 +95,26 @@ export default {
             isOpenOnDragStart: this.node.isOpen,
             uniqueContextId: this.tree.uniqueContextId,
           }),
+          onGenerateDragPreview: ({ nativeSetDragImage }) => {
+            setCustomNativeDragPreview({
+              getOffset: pointerOutsideOfPreview({ x: "16px", y: "8px" }),
+              render: ({ container }) => {
+                // Create our preview element
+                const preview = document.createElement("div");
+
+                // Populate and style the preview element however you like
+                preview.textContent = "My Preview";
+                Object.assign(preview.style, {
+                  padding: "20px",
+                  backgroundColor: "lightpink",
+                });
+
+                // put the "preview" element into the container element
+                container.appendChild(preview);
+              },
+              nativeSetDragImage,
+            });
+          },
           onDragStart: ({ source }) => {
             this.isDragging = true;
             if (source.data.isOpenOnDragStart) {
@@ -128,19 +150,20 @@ export default {
             console.log("instruction", instruction);
 
             if (source.data.id !== this.node.id) {
+              // expand after 500ms if still merging
               if (
                 instruction?.type === "make-child" &&
-                this.node?.children?.length &&
+                this.node.children?.length &&
                 !this.node.isOpen &&
-                !this.cancelExpand
+                !this.cancelExpandRef
               ) {
-                this.cancelExpand = delay({
+                this.cancelExpandRef = delay({
                   waitMs: 500,
                   fn: () => this.tree.expand(this.node.id),
                 });
               }
-              if (instruction?.type !== "make-child" && this.cancelExpand) {
-                this.cancelExpand = null;
+              if (instruction?.type !== "make-child" && this.cancelExpandRef) {
+                this.cancelExpand();
               }
 
               this.instruction = instruction;
@@ -153,11 +176,11 @@ export default {
             this.instruction = null;
           },
           onDragLeave: () => {
-            this.cancelExpand = null;
+            this.cancelExpand();
             this.instruction = null;
           },
           onDrop: () => {
-            this.cancelExpand = null;
+            this.cancelExpand();
             this.instruction = null;
           },
         }),
@@ -205,19 +228,17 @@ export default {
 
       return parentId === this.node.id;
     },
+    cancelExpand() {
+      this.cancelExpandRef?.();
+      this.cancelExpandRef = null;
+    },
   },
   mounted() {
     this.setupDragAndDrop();
   },
   beforeDestroy() {
     this.cleanup();
+    this.cancelExpand();
   },
 };
 </script>
-
-<style>
-.tree-node {
-  position: relative;
-  cursor: move;
-}
-</style>

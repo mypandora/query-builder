@@ -2,37 +2,39 @@
   <div id="app">
     <query-builder :data.sync="treeData" :operatorText="operatorText">
       <template #default="{ data, onUpdate }">
-        <span class="item-field">{{ data.name }}</span>
+        <div class="item-nohover">
+          <span class="item-field">{{ data.name }}</span>
 
-        <el-select
-          class="item-op"
-          size="small"
-          :value="data.condition"
-          @change="(val) => onUpdate('condition', val)"
-          placeholder="请选择"
-        >
-          <el-option
-            v-for="item in conditionOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
+          <el-select
+            class="item-op"
+            size="small"
+            :value="data.condition"
+            @change="(val) => onUpdate('condition', val)"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="item in conditionOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
 
-        <div class="item-value">
-          <el-input
-            :value="data.startValue"
-            @input="(val) => onUpdate('startValue', val)"
-            placeholder="请输入内容"
-          ></el-input>
-        </div>
-        <div class="item-text">至</div>
-        <div class="item-value">
-          <el-input
-            :value="data.endValue"
-            @input="(val) => onUpdate('endValue', val)"
-            placeholder="请输入内容"
-          ></el-input>
+          <div class="item-value">
+            <el-input
+              :value="data.startValue"
+              @input="(val) => onUpdate('startValue', val)"
+              placeholder="请输入内容"
+            ></el-input>
+          </div>
+          <div class="item-text">至</div>
+          <div class="item-value">
+            <el-input
+              :value="data.endValue"
+              @input="(val) => onUpdate('endValue', val)"
+              placeholder="请输入内容"
+            ></el-input>
+          </div>
         </div>
       </template>
     </query-builder>
@@ -158,6 +160,33 @@ export default {
 </script>
 
 <style>
+.item-nohover {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+  z-index: 19;
+  transition: opacity 0.3s;
+}
+
+.item-nohover::before {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  bottom: -10px;
+  right: -10px;
+  content: "";
+}
+
+.item-nohover:hover > .item-close {
+  display: block;
+}
+
+.item-nohover.dragging {
+  opacity: 0;
+}
+
 .item-field {
   min-width: 120px;
   white-space: nowrap;
