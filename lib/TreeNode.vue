@@ -145,9 +145,8 @@ export default {
             return source.data.type === "tree-node" && source.data.uniqueContextId === this.tree.uniqueContextId;
           },
           getIsSticky: () => true,
-          onDrag: ({ self, source }) => {
+          onDrag: ({ location, self, source }) => {
             const instruction = extractInstruction(self.data);
-            console.log("instruction", instruction);
 
             if (source.data.id !== this.node.id) {
               // expand after 500ms if still merging
@@ -166,6 +165,15 @@ export default {
                 this.cancelExpand();
               }
 
+              if (location.current.dropTargets.length > 1) {
+                // console.log("location", this.node?.name, this, location);
+
+                if (this.node?.children) {
+                  this.instruction = null;
+                  return;
+                }
+              }
+
               this.instruction = instruction;
               return;
             }
@@ -175,7 +183,8 @@ export default {
             }
             this.instruction = null;
           },
-          onDragLeave: () => {
+          onDragLeave: ({ self, source }) => {
+            // console.log("self, source :>> ", self, source);
             this.cancelExpand();
             this.instruction = null;
           },
