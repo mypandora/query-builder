@@ -85,11 +85,10 @@ export default {
     },
   },
   mounted() {
-    const _this = this;
     const cleanup = combine(
       monitorForElements({
         canMonitor: ({ source }) => source.data.uniqueContextId === this.uniqueContextId,
-        onDrop(args) {
+        onDrop: (args) => {
           const { location, source } = args;
           // didn't drop on anything
           if (!location.current.dropTargets.length) {
@@ -105,7 +104,7 @@ export default {
             const instruction = extractInstruction(target.data);
 
             if (instruction) {
-              _this.dataReducer({
+              this.dataReducer({
                 type: "instruction",
                 instruction,
                 itemId,
@@ -308,6 +307,9 @@ export default {
       for (const item of current) {
         if (item.id === targetId) {
           return parentIds;
+        }
+        if (!this.hasChildren(item)) {
+          continue;
         }
         const nested = this.getPathToItem({
           current: item.children,

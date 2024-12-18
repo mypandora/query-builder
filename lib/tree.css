@@ -62,11 +62,16 @@
 /* TreeItem.vue */
 .tree-item {
   position: relative;
+  padding: 2px 0;
   cursor: move;
 }
 
 .inner-dragging-styles {
   opacity: 0.4;
+}
+
+.parent-of-instruction-styles {
+  background: #cce0ff;
 }
 
 .item {
@@ -78,6 +83,7 @@
   border: 1px solid var(--primary-color);
   box-sizing: border-box;
   touch-action: none;
+  z-index: 1;
 }
 
 .lucide-circle-x {
@@ -128,7 +134,7 @@
   display: block;
   content: "";
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   background: var(--indicator-color);
   /*  putting the line to the right of the terminal */
   left: calc(var(--terminal-size) / 2);
@@ -157,22 +163,36 @@
   bottom: -1px;
 }
 
-.outline-styles {
-  /* To make things a bit clearer we are making the box that the indicator in as
-	big as the whole tree item */
+.hovering-styles {
   position: absolute;
   top: 0;
-  right: 0;
   left: 0;
   bottom: 0;
+  right: 0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  background-color: var(--primary-bg-color);
+  transition: opacity 0.3s;
+  z-index: 2;
+}
 
-  /* We don't want to cause any additional 'dragenter' events */
-  pointer-events: none;
+.hovering-styles::before,
+.hovering-styles::after {
+  display: block;
+  content: "";
+  z-index: 2;
+  border: 1px solid var(--indicator-color);
+  height: 10px;
+}
 
-  border: 2px solid var(--indicator-color);
-  /* TODO: make this a prop?
-	For now: matching the Confluence tree item border radius */
-  border-radius: 3px;
+.hovering-styles.top::before {
+  background-color: var(--primary-bg-color);
+}
+.hovering-styles.bottom::after {
+  background-color: var(--primary-bg-color);
 }
 
 /** Preview.vue */

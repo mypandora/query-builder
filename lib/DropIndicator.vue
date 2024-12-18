@@ -13,6 +13,10 @@ export default {
         type: "reorder-above", // 'reorder-below', 'make-child', 'reparent', 'instruction-blocked'
       }),
     },
+    edge: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {};
@@ -32,13 +36,14 @@ export default {
     },
 
     getClass(instruction) {
+      const edge = this.edge;
       switch (instruction.type) {
         case "reorder-above":
           return ["line-styles", "line-above-styles"];
         case "reorder-below":
           return ["line-styles", "line-below-styles"];
         case "make-child":
-          return ["outline-styles"];
+          return ["hovering-styles", edge];
         case "reparent":
           return ["line-styles", "line-below-styles"];
         default:
