@@ -1,0 +1,30 @@
+{
+    "plugins": {
+      "release-it-pnpm": {},
+      "@release-it/conventional-changelog": {
+        "preset": "angular",
+        "infile": "CHANGELOG.md"
+      }
+    },
+    "npm": {
+      "publish": true,
+      "ignoreVersion": false,
+      "skipChecks": false
+    },
+    "git": {
+      "commitMessage": "chore: release ${version}",
+      "requireCleanWorkingDir": true,
+      "requireBranch": "main",
+      "commit": true,
+      "tag": true,
+      "push": true,
+      "tagName": "v${version}",
+      "addUntrackedFiles": false
+    },
+    "github": {
+      "release": false
+    },
+    "hooks": {
+      "before:init": ["pnpm build"]
+    }
+  }

@@ -1,7 +1,6 @@
 {
-  "name": "query-builder",
-  "version": "0.0.1",
-  "private": true,
+  "name": "@mypandora/query-builder",
+  "version": "0.0.0",
   "type": "module",
   "files": [
     "dist"
@@ -25,11 +24,18 @@
     "nanoid": "^5.0.9"
   },
   "devDependencies": {
+    "@release-it/conventional-changelog": "^9.0.3",
     "@vitejs/plugin-vue2": "^2.3.3",
     "element-ui": "^2.15.14",
     "prettier": "3.4.2",
+    "release-it": "^17.10.0",
+    "release-it-pnpm": "^4.6.3",
     "vite": "^6.0.3",
     "vue": "2.7.14"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "volta": {
     "node": "20.17.0"
