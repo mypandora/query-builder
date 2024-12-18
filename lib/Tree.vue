@@ -16,6 +16,7 @@
 <script>
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { extractInstruction } from "@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item";
+import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import { nanoid } from "nanoid";
 import TreeGroup from "./TreeGroup.vue";
@@ -99,9 +100,10 @@ export default {
             const itemId = source.data.id;
 
             const target = location.current.dropTargets[0];
-            const targetId = target.data.id;
+            const targetId = target.data[1].id;
 
-            const instruction = extractInstruction(target.data);
+            const closestEdge = extractClosestEdge(target.data[0]);
+            const instruction = extractInstruction(target.data[1]);
 
             if (instruction) {
               this.dataReducer({
@@ -109,6 +111,7 @@ export default {
                 instruction,
                 itemId,
                 targetId,
+                edge: closestEdge,
               });
             }
           }
@@ -254,9 +257,10 @@ export default {
      * @param {Array} data - 数据列表
      * @param {String|Number} targetId - 目标节点的 ID
      * @param {Object} newItem - 要插入的新节点
+     * @param {String} edge - 目标节点的边
      * @returns {Boolean} 是否成功插入
      */
-    insertChild(data, targetId, newItem) {
+    insertChild(data, targetId, newItem, edge) {
       for (let i = 0; i < data.length; i++) {
         const item = data[i];
 
@@ -266,7 +270,7 @@ export default {
             id: nanoid(), // 生成唯一 ID 的方法
             isOpen: true,
             operator: "and",
-            children: [item, newItem], // 将目标节点和新节点作为组的子节点
+            children: edge === "top" ? [newItem, item] : [item, newItem], // 将目标节点和新节点作为组的子节点
           };
 
           // 替换原节点为新组节点
@@ -276,7 +280,7 @@ export default {
 
         // 如果当前节点有子节点，递归处理
         if (this.hasChildren(item)) {
-          const success = this.insertChild(item.children, targetId, newItem);
+          const success = this.insertChild(item.children, targetId, newItem, edge);
           if (success) return true; // 如果子节点中已完成插入，直接返回
         }
       }
@@ -421,7 +425,7 @@ export default {
 
       if (instruction.type === "make-child") {
         this.remove(data, action.itemId);
-        this.insertChild(data, action.targetId, item);
+        this.insertChild(data, action.targetId, item, action.edge);
         return;
       }
 

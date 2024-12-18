@@ -29,7 +29,7 @@ import {
   monitorForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { attachInstruction, extractInstruction } from "@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item";
-import { attachClosestEdge, extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"; // NEW
+import { attachClosestEdge, extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"; 
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import DropIndicator from "./DropIndicator.vue";
 import IconClose from "./IconClose.vue";
