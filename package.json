@@ -13,10 +13,25 @@
     "require": "./dist/query-builder.umd.js",
     "style": "./dist/query-builder.css"
   },
+  "homepage": "https://github.com/mypandora/query-builder/blob/main/README.md",
+  "bugs": {
+    "url": "https://github.com/mypandora/query-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mypandora/query-builder.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "release": "release-it --cli",
+    "commitlint": "commitlint --edit"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.4.0",
