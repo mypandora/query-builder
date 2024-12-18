@@ -249,25 +249,39 @@ export default {
       return false; // 未找到目标节点
     },
 
+    /**
+     * 将新节点与目标节点组合成子节点，直接修改原对象
+     * @param {Array} data - 数据列表
+     * @param {String|Number} targetId - 目标节点的 ID
+     * @param {Object} newItem - 要插入的新节点
+     * @returns {Boolean} 是否成功插入
+     */
     insertChild(data, targetId, newItem) {
-      return data.flatMap((item) => {
+      for (let i = 0; i < data.length; i++) {
+        const item = data[i];
+
         if (item.id === targetId) {
-          return {
-            ...item,
+          // 创建一个新的组节点
+          const newGroup = {
+            id: nanoid(), // 生成唯一 ID 的方法
             isOpen: true,
-            children: [newItem, ...item.children],
+            operator: "and",
+            children: [item, newItem], // 将目标节点和新节点作为组的子节点
           };
+
+          // 替换原节点为新组节点
+          data.splice(i, 1, newGroup);
+          return true; // 插入成功，返回
         }
 
-        if (!this.hasChildren(item)) {
-          return item;
+        // 如果当前节点有子节点，递归处理
+        if (this.hasChildren(item)) {
+          const success = this.insertChild(item.children, targetId, newItem);
+          if (success) return true; // 如果子节点中已完成插入，直接返回
         }
+      }
 
-        return {
-          ...item,
-          children: this.insertChild(item.children, targetId, newItem),
-        };
-      });
+      return false; // 未找到目标节点，返回失败
     },
 
     /**
