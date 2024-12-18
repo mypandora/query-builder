@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-node" :class="{ 'inner-dragging-styles': isDragging }" ref="treeNodeRef">
+  <div class="tree-item" :class="{ 'inner-dragging-styles': isDragging }" ref="treeItemRef">
     <TreeGroup v-if="node.children?.length" :data="node" :level="level + 1" :operatorText="operatorText">
       <template #default="slotProps">
         <slot v-bind="slotProps"></slot>
@@ -52,7 +52,7 @@ function delay({ waitMs: timeMs, fn }) {
 }
 
 export default {
-  name: "TreeNode",
+  name: "TreeItem",
   components: {
     DropIndicator,
     IconClose,
@@ -84,14 +84,14 @@ export default {
   },
   methods: {
     setupDragAndDrop() {
-      if (!this.$refs.treeNodeRef) return;
+      if (!this.$refs.treeItemRef) return;
 
       const cleanup = combine(
         draggable({
-          element: this.$refs.treeNodeRef,
+          element: this.$refs.treeItemRef,
           getInitialData: () => ({
             id: this.node.id,
-            type: "tree-node",
+            type: "tree-item",
             isOpenOnDragStart: this.node.isOpen,
             uniqueContextId: this.tree.uniqueContextId,
           }),
@@ -129,7 +129,7 @@ export default {
           },
         }),
         dropTargetForElements({
-          element: this.$refs.treeNodeRef,
+          element: this.$refs.treeItemRef,
           getData: ({ input, element }) => {
             const data = { id: this.node.id };
 
@@ -142,7 +142,7 @@ export default {
             });
           },
           canDrop: ({ source }) => {
-            return source.data.type === "tree-node" && source.data.uniqueContextId === this.tree.uniqueContextId;
+            return source.data.type === "tree-item" && source.data.uniqueContextId === this.tree.uniqueContextId;
           },
           getIsSticky: () => true,
           onDrag: ({ location, self, source }) => {

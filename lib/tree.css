@@ -59,8 +59,8 @@
   margin: 8px 0;
 }
 
-/* TreeNode.vue */
-.tree-node {
+/* TreeItem.vue */
+.tree-item {
   position: relative;
   cursor: move;
 }

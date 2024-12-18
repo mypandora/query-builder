@@ -12,7 +12,7 @@
       <div v-if="data.isOpen" class="tree-group--box">
         <div class="box--brackets"></div>
         <div class="tree-subtree">
-          <tree-node
+          <tree-item
             v-for="child in data.children"
             :key="child.id"
             :node="child"
@@ -22,7 +22,7 @@
             <template #default="slotProps">
               <slot v-bind="slotProps"></slot>
             </template>
-          </tree-node>
+          </tree-item>
         </div>
       </div>
       <div v-else class="tree-group-text">展开{{ data.children?.length || 0 }}个子条件</div>
@@ -30,24 +30,24 @@
 
     <!--单数据时 -->
     <div v-else class="content condition" style="padding: 8px">
-      <tree-node :node="data" :level="level + 1">
+      <tree-item :node="data" :level="level + 1">
         <template #default="slotProps">
           <slot v-bind="slotProps"></slot>
         </template>
-      </tree-node>
+      </tree-item>
     </div>
   </div>
 </template>
 
 <script>
-import TreeNode from "./TreeNode.vue";
+import TreeItem from "./TreeItem.vue";
 import IconExpand from "./IconExpand.vue";
 import IconCollapse from "./IconCollapse.vue";
 
 export default {
   name: "TreeGroup",
   components: {
-    TreeNode,
+    TreeItem,
     IconExpand,
     IconCollapse,
   },
