@@ -14,6 +14,9 @@
 </template>
 
 <script>
+import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { extractInstruction } from "@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item";
+import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import { nanoid } from "nanoid";
 import TreeGroup from "./TreeGroup.vue";
 import "./tree.css";
@@ -55,29 +58,68 @@ export default {
         collapse: (itemId) => this.collapse(this.root, itemId),
         expand: (itemId) => this.expand(this.root, itemId),
         toggleOperator: (itemId) => this.toggleOperator(this.root, itemId),
-        uniqueContextId: Symbol("uniqueId"),
+        uniqueContextId: this.uniqueContextId,
       },
     };
   },
   data() {
     return {
+      uniqueContextId: Symbol("uniqueId"),
       root: this.handleFormTreeData(this.data),
     };
   },
   computed: {
     isEmpty() {
-      return this.data.length === 0;
+      return this.root?.length === 0;
     },
   },
   watch: {
     root: {
       deep: true,
       handler(newValue, oldValue) {
-        console.log("newValue :>> ", newValue);
-        console.log("oldValue :>> ", oldValue);
+        // console.log("newValue :>> ", newValue);
+        // console.log("oldValue :>> ", oldValue);
         this.$emit("update:data", this.flattenChildren(newValue));
       },
     },
+  },
+  mounted() {
+    const _this = this;
+    const cleanup = combine(
+      monitorForElements({
+        canMonitor: ({ source }) => source.data.uniqueContextId === this.uniqueContextId,
+        onDrop(args) {
+          const { location, source } = args;
+          // didn't drop on anything
+          if (!location.current.dropTargets.length) {
+            return;
+          }
+
+          if (source.data.type === "tree-item") {
+            const itemId = source.data.id;
+
+            const target = location.current.dropTargets[0];
+            const targetId = target.data.id;
+
+            const instruction = extractInstruction(target.data);
+
+            if (instruction) {
+              _this.dataReducer({
+                type: "instruction",
+                instruction,
+                itemId,
+                targetId,
+              });
+            }
+          }
+        },
+      }),
+    );
+
+    this.cleanup = cleanup;
+  },
+  beforeDestroy() {
+    this.cleanup();
   },
   methods: {
     /**
@@ -121,7 +163,7 @@ export default {
     /**
      * 打平树。
      * 假如节点只有一个子节点，则会直接替换为子节点
-     * @param data
+     * @param {Array} data - 树形数据
      */
     flattenChildren(data) {
       for (let i = 0; i < data.length; i++) {
@@ -129,13 +171,11 @@ export default {
 
         // 如果节点只有一个子节点，直接替换为父级
         if (item.children && item.children.length === 1) {
-          this.$set(data, i, item.children[0]);
+          data.splice(i, 1, item.children[0]);
         } else if (item.children && item.children.length > 0) {
-          this.flattenChildren(item.children);
+          this.flattenChildren(item.children); // 递归处理子节点
         }
       }
-
-      return data;
     },
 
     /**
@@ -159,37 +199,56 @@ export default {
           }
         }
       }
-      return data; // 直接返回被修改的 data
     },
 
+    /**
+     * 递归插入节点，直接修改原对象
+     * @param {Array} data - 数据列表
+     * @param {String|Number} targetId - 目标节点的 ID
+     * @param {Object} newItem - 要插入的新节点
+     * @returns {Boolean} 是否成功插入
+     */
     insertBefore(data, targetId, newItem) {
-      return data.flatMap((item) => {
+      for (let i = 0; i < data.length; i++) {
+        const item = data[i];
         if (item.id === targetId) {
-          return [newItem, item];
+          // 在目标节点前插入新节点
+          data.splice(i, 0, newItem);
+          return true; // 插入成功，直接返回
         }
         if (this.hasChildren(item)) {
-          return {
-            ...item,
-            children: this.insertBefore(item.children, targetId, newItem),
-          };
+          // 递归子节点
+          const result = this.insertBefore(item.children, targetId, newItem);
+          if (result) return true; // 子节点中已插入，直接返回
         }
-        return item;
-      });
+      }
+      return false; // 未找到目标节点
     },
+
+    /**
+     * 递归插入节点，直接修改原对象
+     * @param {Array} data - 数据列表
+     * @param {String|Number} targetId - 目标节点的 ID
+     * @param {Object} newItem - 要插入的新节点
+     * @returns {Boolean} 是否成功插入
+     */
     insertAfter(data, targetId, newItem) {
-      return data.flatMap((item) => {
+      for (let i = 0; i < data.length; i++) {
+        const item = data[i];
         if (item.id === targetId) {
-          return [item, newItem];
+          // 在目标节点后插入新节点
+          data.splice(i + 1, 0, newItem);
+          return true; // 插入成功，直接返回
         }
         if (this.hasChildren(item)) {
-          return {
-            ...item,
-            children: this.insertAfter(item.children, targetId, newItem),
-          };
+          // 递归子节点
+          const result = this.insertAfter(item.children, targetId, newItem);
+          if (result) return true; // 子节点中已插入，直接返回
         }
-        return item;
-      });
+      }
+      return false; // 未找到目标节点
     },
+
     insertChild(data, targetId, newItem) {
       return data.flatMap((item) => {
         if (item.id === targetId) {
@@ -210,6 +269,12 @@ export default {
         };
       });
     },
+
+    /**
+     * 递归查找节点
+     * @param data
+     * @param itemId
+     */
     find(data, itemId) {
       for (const item of data) {
         if (item.id === itemId) {
@@ -239,27 +304,56 @@ export default {
         }
       }
     },
+
+    /**
+     * 判断节点是否有子节点
+     * @param item
+     */
     hasChildren(item) {
       return item.children?.length > 0;
     },
+
+    /**
+     * 切换节点展开状态
+     * @param data
+     * @param id
+     */
     toggle(data, id) {
       const item = this.find(data, id);
       if (item) {
         this.$set(item, "isOpen", !item.isOpen);
       }
     },
+
+    /**
+     * 折叠节点
+     * @param data
+     * @param id
+     */
     collapse(data, id) {
       const item = this.find(data, id);
       if (item) {
         this.$set(item, "isOpen", false);
       }
     },
+
+    /**
+     * 展开节点
+     * @param data
+     * @param id
+     */
     expand(data, id) {
       const item = this.find(data, id);
       if (item) {
         this.$set(item, "isOpen", true);
       }
     },
+
+    /**
+     * 切换节点操作符
+     * @param data
+     * @param id
+     */
     toggleOperator(data, id) {
       const item = this.find(data, id);
       if (item) {
@@ -267,78 +361,54 @@ export default {
       }
     },
 
+    /**
+     * 节点树的数据操作
+     * @param action
+     */
     dataReducer(action) {
       const data = this.root;
-      console.log("action", action);
 
       const item = this.find(data, action.itemId);
       if (!item) {
         return data;
       }
 
-      if (action.type === "instruction") {
-        const instruction = action.instruction;
+      const instruction = action.instruction;
 
-        if (instruction.type === "reparent") {
-          const path = this.getPathToItem({
-            current: data,
-            targetId: action.targetId,
-          });
-          const desiredId = path[instruction];
-          let result = this.remove(data, action.itemId);
-          result = this.insertAfter(result, desiredId, item);
-          return result;
-        }
-
-        if (action.itemId === action.targetId) {
-          return data;
-        }
-
-        if (instruction.type === "reorder-above") {
-          let result = this.remove(data, action.itemId);
-          result = this.insertBefore(result, action.targetId, item);
-          return result;
-        }
-
-        if (instruction.type === "reorder-below") {
-          let result = this.remove(data, action.itemId);
-          result = this.insertAfter(result, action.targetId, item);
-          return result;
-        }
-
-        if (instruction.type === "make-child") {
-          let result = this.remove(data, action.itemId);
-          result = this.insertChild(result, action.targetId, item);
-          return result;
-        }
-
-        console.warn("TODO: action not implemented", instruction);
-
-        return data;
+      if (instruction.type === "reparent") {
+        const path = this.getPathToItem({
+          current: data,
+          targetId: action.targetId,
+        });
+        const desiredId = path[instruction];
+        let result = this.remove(data, action.itemId);
+        result = this.insertAfter(result, desiredId, item);
+        return result;
       }
 
-      return data;
-    },
-    handleNodeDrop({ sourceId, targetId, position }) {
-      // 首先从原位置移除节点
-      const sourceNode = this.find(this.root, sourceId);
-      if (!sourceNode) return;
-
-      // 克隆源节点，避免引用问题
-      const clonedNode = JSON.parse(JSON.stringify(sourceNode));
-
-      // 移除原节点
-      this.remove(this.root, sourceId);
-
-      // 根据放置位置插入节点
-      if (position === "top") {
-        this.insertBefore(this.root, targetId, clonedNode);
-      } else if (position === "bottom") {
-        this.insertAfter(this.root, targetId, clonedNode);
+      if (action.itemId === action.targetId) {
+        return;
       }
 
-      // 触发更新事件
-      this.$emit("update:data", this.root);
+      if (instruction.type === "reorder-above") {
+        this.remove(data, action.itemId);
+        this.insertBefore(data, action.targetId, item);
+        return;
+      }
+
+      if (instruction.type === "reorder-below") {
+        this.remove(data, action.itemId);
+        this.insertAfter(data, action.targetId, item);
+        return;
+      }
+
+      if (instruction.type === "make-child") {
+        this.remove(data, action.itemId);
+        this.insertChild(data, action.targetId, item);
+        return;
+      }
+
+      console.warn("TODO: action not implemented", instruction);
     },
   },
 };

@@ -100,7 +100,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  left: var(--horizontal-indent);
+  left: 0;
   bottom: 0;
 
   /* We don't want to cause any additional 'dragenter' events */
@@ -163,7 +163,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  left: var(--horizontal-indent);
+  left: 0;
   bottom: 0;
 
   /* We don't want to cause any additional 'dragenter' events */

@@ -11,8 +11,6 @@ export default {
       type: Object,
       default: () => ({
         type: "reorder-above", // 'reorder-below', 'make-child', 'reparent', 'instruction-blocked'
-        currentLevel: 0,
-        indentPerLevel: 0,
       }),
     },
   },
@@ -27,13 +25,8 @@ export default {
   methods: {
     getStyle(instruction, isBlocked) {
       const style = {
-        "--horizontal-indent": `${instruction.currentLevel * instruction.indentPerLevel}px`,
         "--indicator-color": !isBlocked ? "#579DFF" : "var(--warning-color)", // Replace token with actual value
       };
-
-      if (instruction.type === "reparent") {
-        style["--horizontal-indent"] = `${instruction.desiredLevel * instruction.indentPerLevel}px`;
-      }
 
       return style;
     },

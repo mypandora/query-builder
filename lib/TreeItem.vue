@@ -136,7 +136,6 @@ export default {
             return attachInstruction(data, {
               input,
               element,
-              indentPerLevel: 0,
               currentLevel: this.level,
               block: [],
             });
