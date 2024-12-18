@@ -52,6 +52,7 @@
     "registry": "https://registry.npmjs.org/",
     "access": "public"
   },
+  "packageManager": "pnpm@9.11.0",
   "volta": {
     "node": "20.17.0"
   }
