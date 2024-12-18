@@ -174,3 +174,11 @@
 	For now: matching the Confluence tree item border radius */
   border-radius: 3px;
 }
+
+/** Preview.vue */
+.preview-styles {
+  --grid: 8px;
+  padding: var(--grid);
+  border-radius: 3px;
+  background: #ffffff;
+}

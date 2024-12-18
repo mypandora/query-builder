@@ -22,8 +22,6 @@ import {
   monitorForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { attachInstruction, extractInstruction } from "@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item";
-import { pointerOutsideOfPreview } from "@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview";
-import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import DropIndicator from "./DropIndicator.vue";
 import IconClose from "./IconClose.vue";
@@ -95,26 +93,6 @@ export default {
             isOpenOnDragStart: this.node.isOpen,
             uniqueContextId: this.tree.uniqueContextId,
           }),
-          onGenerateDragPreview: ({ nativeSetDragImage }) => {
-            setCustomNativeDragPreview({
-              getOffset: pointerOutsideOfPreview({ x: "16px", y: "8px" }),
-              render: ({ container }) => {
-                // Create our preview element
-                const preview = document.createElement("div");
-
-                // Populate and style the preview element however you like
-                preview.textContent = "My Preview";
-                Object.assign(preview.style, {
-                  padding: "20px",
-                  backgroundColor: "lightpink",
-                });
-
-                // put the "preview" element into the container element
-                container.appendChild(preview);
-              },
-              nativeSetDragImage,
-            });
-          },
           onDragStart: ({ source }) => {
             this.isDragging = true;
             if (source.data.isOpenOnDragStart) {
