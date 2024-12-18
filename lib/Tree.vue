@@ -79,7 +79,8 @@ export default {
       handler(newValue, oldValue) {
         // console.log("newValue :>> ", newValue);
         // console.log("oldValue :>> ", oldValue);
-        this.$emit("update:data", this.flattenChildren(newValue));
+        this.flattenChildren(newValue);
+        this.$emit("update:data", newValue);
       },
     },
   },
