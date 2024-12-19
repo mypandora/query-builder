@@ -8,10 +8,11 @@
   "main": "./dist/query-builder.umd.js",
   "module": "./dist/query-builder.es.js",
   "exports": {
-    "types": "./index.d.ts",
-    "import": "./dist/query-builder.es.js",
-    "require": "./dist/query-builder.umd.js",
-    "style": "./dist/query-builder.css"
+    ".": {
+      "import": "./dist/query-builder.es.js",
+      "require": "./dist/query-builder.umd.js"
+    },
+    "./style.css": "./dist/query-builder.css"
   },
   "homepage": "https://github.com/mypandora/query-builder/blob/main/README.md",
   "bugs": {
