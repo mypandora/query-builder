@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <p>
+      <el-button type="primary" @click="addCondition">增加条件</el-button>
+    </p>
     <query-builder :data.sync="treeData" :operatorText="operatorText">
       <template #default="{ data, onUpdate }">
         <div class="item-nohover">
@@ -153,8 +156,164 @@ export default {
             },
           ],
         },
+        {
+          operator: "or",
+          isOpen: true,
+          children: [
+            {
+              operator: "and",
+              isOpen: true,
+              children: [
+                {
+                  name: "手机品牌",
+                  condition: "",
+                  startValue: "",
+                  endValue: "",
+                },
+                {
+                  name: "手机型号（或机型）",
+                  condition: "",
+                  startValue: "",
+                  endValue: "",
+                },
+              ],
+            },
+            {
+              operator: "and",
+              isOpen: true,
+              children: [
+                {
+                  name: "手机价格",
+                  condition: "",
+                  startValue: "",
+                  endValue: "",
+                },
+                {
+                  operator: "and",
+                  isOpen: true,
+                  children: [
+                    {
+                      name: "手机颜色",
+                      condition: "",
+                      startValue: "",
+                      endValue: "",
+                    },
+                    {
+                      name: "手机尺寸",
+                      condition: "",
+                      startValue: "",
+                      endValue: "",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              name: "手机内存",
+              condition: "",
+              startValue: "",
+              endValue: "",
+            },
+            {
+              operator: "and",
+              isOpen: true,
+              children: [
+                {
+                  name: "手机网络",
+                  condition: "",
+                  startValue: "",
+                  endValue: "",
+                },
+                {
+                  name: "手机系统",
+                  condition: "",
+                  startValue: "",
+                  endValue: "",
+                },
+              ],
+            },
+          ],
+        },
       ],
     };
+  },
+  methods: {
+    addCondition() {
+      // 情况1
+      // []
+      if (Array.isArray(this.treeData) && this.treeData.length === 0) {
+        this.treeData = [
+          {
+            name: Date.now(),
+            condition: "",
+            startValue: "",
+            endValue: "",
+          },
+        ];
+      }
+
+      //  情况2
+      // [
+      //   {
+      //     name: "手机内存",
+      //     condition: "",
+      //     startValue: "",
+      //     endValue: "",
+      //     }
+      // ]
+      else if (Array.isArray(this.treeData) && this.treeData.length === 1) {
+        this.treeData = [
+          {
+            operator: "and",
+            isOpen: true,
+            children: [
+              { ...this.treeData[0] }, // 旧内容
+            ],
+          },
+        ];
+
+        const newCondition = {
+          name: Date.now(),
+          condition: "",
+          startValue: "",
+          endValue: "",
+        };
+
+        this.treeData[0].children.push(newCondition);
+      }
+
+      // 情况3
+      // [
+      //   {
+      //     operator: "and",
+      //     isOpen: true,
+      //     children: [
+      //       {
+      //         name: "手机网络",
+      //         condition: "",
+      //         startValue: "",
+      //         endValue: "",
+      //       },
+      //       {
+      //         name: "手机系统",
+      //         condition: "",
+      //         startValue: "",
+      //         endValue: "",
+      //       },
+      //     ],
+      //   },
+      // ]
+      else if (Array.isArray(this.treeData) && this.treeData[0].children.length > 1) {
+        const newCondition = {
+          name: Date.now(),
+          condition: "",
+          startValue: "",
+          endValue: "",
+        };
+
+        this.treeData[0].children.push(newCondition);
+      }
+    },
   },
 };
 </script>

@@ -18,9 +18,11 @@ import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/ad
 import { extractInstruction } from "@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item";
 import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
-import { nanoid } from "nanoid";
 import TreeGroup from "./TreeGroup.vue";
+import { isEqual, deepClone } from "./utils";
 import "./tree.css";
+
+let nodeIdSeed = 0;
 
 export default {
   name: "Tree",
@@ -66,7 +68,7 @@ export default {
   data() {
     return {
       uniqueContextId: Symbol("uniqueId"),
-      root: this.handleFormTreeData(this.data),
+      root: [],
     };
   },
   computed: {
@@ -75,13 +77,22 @@ export default {
     },
   },
   watch: {
+    data: {
+      deep: true,
+      immediate: true,
+      handler(newValue) {
+        if (!isEqual(newValue, this.root)) {
+          this.root = deepClone(this.handleFormTreeData(newValue));
+        }
+      },
+    },
     root: {
       deep: true,
-      handler(newValue, oldValue) {
-        // console.log("newValue :>> ", newValue);
-        // console.log("oldValue :>> ", oldValue);
-        this.flattenChildren(newValue);
-        this.$emit("update:data", newValue);
+      handler(newValue) {
+        if (!isEqual(newValue, this.data)) {
+          this.flattenChildren(newValue);
+          this.$emit("update:data", deepClone(newValue));
+        }
       },
     },
   },
@@ -135,7 +146,7 @@ export default {
         // Create a shallow copy of the node
         const newNode = { ...node };
         if (newNode.id === undefined) {
-          newNode.id = nanoid();
+          newNode.id = nodeIdSeed++;
         }
 
         // If the node has children, recursively add IDs to them
@@ -267,7 +278,7 @@ export default {
         if (item.id === targetId) {
           // 创建一个新的组节点
           const newGroup = {
-            id: nanoid(), // 生成唯一 ID 的方法
+            id: nodeIdSeed++, // 生成唯一 ID 的方法
             isOpen: true,
             operator: "and",
             children: edge === "top" ? [newItem, item] : [item, newItem], // 将目标节点和新节点作为组的子节点

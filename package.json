@@ -36,8 +36,7 @@
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.4.0",
-    "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.0.3",
-    "nanoid": "^5.0.9"
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.0.3"
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^9.0.3",
