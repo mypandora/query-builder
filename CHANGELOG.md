@@ -1,5 +1,12 @@
 
 
+## [0.0.3](https://github.com/mypandora/query-builder/compare/v0.0.2...v0.0.3) (2024-12-20)
+
+
+### Bug Fixes
+
+* 修复动态添加数据未响应问题 ([8f9f597](https://github.com/mypandora/query-builder/commit/8f9f597178a1935097057e78a3c235bd8b10595c))
+
 ## [0.0.2](https://github.com/mypandora/query-builder/compare/v0.0.1...v0.0.2) (2024-12-19)
 
 ## 0.0.1 (2024-12-18)
